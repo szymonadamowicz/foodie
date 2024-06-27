@@ -1,0 +1,55 @@
+{% extends "base.html" %} {% block content %}
+<nav class="navbar">
+  <span class="navbar-brand mb-0 h1">foodie</span>
+</nav>
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <div>
+      {% for category, message in messages %}
+        <div class="alert alert-warning">
+          {{ message }}
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
+<form class="signUpForm" method="post" action="{{ url_for('signup') }}">
+  <h1>welcome to foodie</h1>
+  <h3>please sign up to continue:</h3>
+  <div class="form-group form-signup">
+    <input
+      type="name"
+      class="form-control"
+      name="name"
+      placeholder="enter full name"
+      required
+    />
+  </div>
+  <div class="form-group form-signup">
+    <input
+      type="email"
+      class="form-control"
+      name="email"
+      aria-describedby="emailHelp"
+      placeholder="enter email"
+      required
+    />
+  </div>
+  <div class="form-group form-signup">
+    <input
+      type="password"
+      class="form-control"
+      name="password"
+      placeholder="enter password"
+      required
+    />
+  </div>
+
+  <button type="submit" class="btn btn-primary">sign up</button>
+  <small id="emailHelp" class="form-text">
+    already on foodie? <a href="/login">log in here</a>
+  </small>
+  <p class="error error--hidden"></p>
+</form>
+
+{% endblock %}

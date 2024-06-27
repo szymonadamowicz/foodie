@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<nav class="navbar">
+    <span class="navbar-brand mb-0 h1">foodie</span>
+    <div class="nav-buttons">
+      <a href="{{ url_for('account') }}" class="btn btn-primary">account</a>
+      <a href="{{ url_for('logout') }}" class="btn btn-primary">log out</a>
+    </div>
+  </nav>
+
+<div class="recipes">
+    <div class="recipes_text">
+    {% for day_plan in diet_plan %}
+        {% for meal_number, meal in day_plan['day'].items() %}
+            <div>
+                <h4>Recipe Title: {{ meal['title'] }}</h4>
+                <p>Calories: {{ meal['calories'] }}</p>
+                <p>Ingredients:</p>
+                <ul>
+                    {% for ingredient, quantity in meal['ingredients'].items() %}
+                        <li>{{ ingredient }}: {{ quantity }}</li>
+                    {% endfor %}
+                </ul>
+                <p>Preparation: {{ meal['preparation'] }}</p>
+                <p>Macros:</p>
+                <ul>
+                    {% for macro, value in meal['macros'].items() %}
+                        <li>{{ macro }}: {{ value }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endfor %}
+    {% endfor %}</div>
+    <div>
+        
+        <div id="message" class="alert alert-warning"></div>
+        <div class="recipe_bottom">
+        <label for="planName"></label>
+        <input type="text" id="planName" name="planName" placeholder="name your diet plan">
+        <div class="recipe_buttons">
+        <button onclick="saveDietPlan()" class="btn btn-secondary">save</button>
+        <button onclick="downloadDietPlan()" class="btn btn-primary">download diet plan</button>
+        <button onclick="downloadIngredientList()" class="btn btn-primary">download ingredient list</button> 
+
+    </div>
+</div>
+    </div>
+
+    <script>
+function saveDietPlan() {
+    const planName = document.getElementById('planName').value;
+    fetch("{{ url_for('save_diet_plan') }}", {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ name: planName })
+    })
+    .then(response => {
+        if (!response.ok) {
+            return response.json().then(data => Promise.reject(data));
+        }
+        return response.json();
+    })
+    .then(data => {
+        document.getElementById('message').innerText = data.success;
+    })
+    .catch(error => {
+        document.getElementById('message').innerText = error.error || 'an unexpected error occurred';
+        console.error('error:', error);
+    });
+}
+
+    
+        function downloadDietPlan() {
+            const planName = document.getElementById('planName').value || 'diet';
+            window.location.href = "{{ url_for('download_diet_plan', name='') }}/" + planName;
+        }
+        function downloadIngredientList() {
+    const planName = document.getElementById('planName').value || 'ingredients';
+    window.location.href = "{{ url_for('download_ingredient_list', name='') }}/" + planName;
+}
+    </script>
+    
+{% endblock %}
